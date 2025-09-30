@@ -6,21 +6,31 @@ public class Renderer
 {
     public void Draw(RenderableObject obj, Camera camera)
     {
-        // if (changeActiveShader) obj.Shader.Use();
+        obj.Shader.Use();
         GL.BindVertexArray(obj.Vao);
 
-        var uTranslation = GL.GetUniformLocation(obj.Shader.Id, "translation");
-        var uProjection = GL.GetUniformLocation(obj.Shader.Id, "projection");
-        var uView = GL.GetUniformLocation(obj.Shader.Id, "view");
+        obj.Shader.SetMatrix4f("projection", camera.Projection);
+        obj.Shader.SetMatrix4f("view", camera.View);
+        obj.Shader.SetMatrix4f("translation", obj.Transform);
 
-        var projection = camera.Projection;
-        GL.UniformMatrix4f(uProjection, 1, false, ref projection);
-        var view = camera.View;
-        GL.UniformMatrix4f(uView, 1, false, ref view);
-        var transform = obj.Transform;
-        GL.UniformMatrix4f(uTranslation, 1, false, ref transform);
+        obj.Texture.Bind();
 
-        //obj.Texture.Bind();
+        GL.DrawArrays(PrimitiveType.Triangles, 0, obj.VertexCount);
+    }
+
+    public void Draw(RenderableObject obj, Camera camera, Material material)
+    {
+        obj.Shader.Use();
+        GL.BindVertexArray(obj.Vao);
+
+        material.Texture?.Bind();
+
+        obj.Shader.SetVector3("objectColor", material.ObjectColor);
+        obj.Shader.SetFloat("shininess", material.Shininess);
+        obj.Shader.SetVector3("cameraPos", camera.Position);
+        obj.Shader.SetMatrix4f("projection", camera.Projection);
+        obj.Shader.SetMatrix4f("view", camera.View);
+        obj.Shader.SetMatrix4f("translation", obj.Transform);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, obj.VertexCount);
     }

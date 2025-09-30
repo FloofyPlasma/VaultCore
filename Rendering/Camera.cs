@@ -8,7 +8,6 @@ public class Camera
     private readonly float near = 0.1f;
     private Vector3 front;
     private float pitch;
-    private Vector3 position;
     private Vector3 right;
     private Matrix4 transform;
     private Vector3 up;
@@ -16,7 +15,7 @@ public class Camera
 
     public Camera(float aspectRatio)
     {
-        position = new Vector3(0f, 0.5f, -1.5f);
+        Position = new Vector3(0f, 0.5f, -1.5f);
         yaw = 0f;
         pitch = 0f;
 
@@ -24,6 +23,8 @@ public class Camera
 
         Update();
     }
+
+    public Vector3 Position { get; private set; }
 
     public Matrix4 Projection { get; }
 
@@ -39,7 +40,7 @@ public class Camera
         right = Vector3.Normalize(Vector3.Cross(front, Vector3.UnitY));
         up = Vector3.Normalize(Vector3.Cross(right, front));
 
-        View = Matrix4.LookAt(position, position + front, up);
+        View = Matrix4.LookAt(Position, Position + front, up);
     }
 
     public void Look(Vector2 delta)
@@ -57,7 +58,7 @@ public class Camera
     {
         var direction = -move.X * right + move.Y * up + move.Z * front;
 
-        position -= direction * 0.05f;
+        Position -= direction * 0.05f;
 
         Update();
     }
